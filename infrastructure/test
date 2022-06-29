@@ -1,0 +1,13 @@
+count=1
+for i in {{1..10}}
+do
+  echo $count
+  sleep 2
+  count=$((count+1))
+  until [[ $count -ne 5 ]] 
+    do
+      echo "Finalmente: $count"
+      break
+    done
+done
+

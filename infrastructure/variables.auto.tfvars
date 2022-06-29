@@ -1,0 +1,5 @@
+person_name	= "bruno"
+rg_name		= ""
+location	= "eastus2"
+db_username	= ""
+db_password	= ""

@@ -1,3 +1,11 @@
+# Atualização, automatizando criação da aplicação via shell, usando o script: up_app.sh
+
+```
+bash up-app.sh
+```
+
+
+
 # KXP SRE Hiring Lab
 Olá caro participante estamos felizes da sua disposição para realizar esse teste, ele não será dificil mas envolverá muita atenção.
 

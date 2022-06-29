@@ -1,13 +1,14 @@
-
 import datetime
 from flask_sqlalchemy import Model
-
 from sqlalchemy import desc
 from database import db_session, init_db
 from flask import Flask, jsonify, request
 from models import Post
 from flask_cors import CORS, cross_origin
 from datetime import datetime
+import os
+
+os.system("python3 setup.py")
 
 app = Flask(__name__)
 app.debug = True
