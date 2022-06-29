@@ -39,10 +39,10 @@ APP_NAME=`grep default_hostname infrastructure/terraform.tfstate | cut -d ":" -f
 DB_HOST=$(host `grep database.azure.com infrastructure/terraform.tfstate | cut -d ":" -f2| tr -d ' ",'`| cut -d " " -f4| head -1)
 DB_USER=`grep db_username infrastructure/variables.auto.tfvars | cut -d "=" -f2| tr -d '" \n\r'`
 DB_PASS=`grep db_password infrastructure/variables.auto.tfvars | cut -d "=" -f2| tr -d '" \n\r'`
-DB_NAME=`grep fqdn infrastructure/terraform.tfstate| cut -d ":" -f2| tr -d '\n\r" '| cut -d "." -f1`
+DB_NAME=`az postgres flexible-server  list | jq .[].name| head -1| tr -d '\n\r"'`
 #Monta string da API
 echo 'DATABASE_URI="postgresql://'$DB_USER':'$DB_PASS'@'$DB_HOST'/postgres?sslmode=require"' > back-end/web-api/.env
-APP_STRING=`cat back-end/web-api/.env | cut -d "=" -f2` 
+APP_STRING=`cat back-end/web-api/.env | cut -d "=" -f2| tr -d '\n\r"'`
 ST_NAME=`cat infrastructure/terraform.tfstate | grep primary_web_endpoint| cut -d ":" -f2,3| tr -d ',"'| cut -d "." -f1| cut -d "/" -f3`
 echo "[!!] Verifique os valores do deployment: "
 
@@ -62,7 +62,7 @@ else
 	echo "[-] Ok, saindo..."
 	exit 1
 fi
-
+#######################################################################################
 #Inicia criação da webapp
 cd back-end/web-api/
 rm -rf .azure
@@ -70,17 +70,19 @@ az webapp config appsettings set --resource-group "$RG" --name $APP_NAME --setti
 #cat .env
 #Criando variavel de strinf de conexão
 az webapp config appsettings set  --name $APP_NAME --settings DATABASE_URI=$APP_STRING --resource-group $RG
-az webapp config set --name $APP_NAME --resource-group $RG --startup-file startup.sh
-#Publicando a aplicação
-echo "Subindo aplicação em WEBAPPS"
-az webapp up --resource-group $RG --name $APP_NAME
+az webapp config set --name $APP_NAME --resource-group $RG 
 
 #Libera regra para serviços do Azure
 az postgres flexible-server firewall-rule create --resource-group $RG \
-                                        --server-name $DB_NAME \
-                                        --name AllowAllWindowsAzureIps \
+                                        --name $DB_NAME \
+					--rule-name AllowAllWindowsAzureIps \
                                         --start-ip-address 0.0.0.0 \
-                                        --end-ip-address 0.0.0.0
+                                        --end-ip-address 255.255.255.255 
+
+#Publicando a aplicação
+echo "Subindo aplicação em WEBAPPS"
+az webapp up --resource-group $RG --name $APP_NAME
+########################################################################################3
 
 #Cria aplicação estatica e adiciona em storage account
 cd ../../front-end/customer-app
@@ -93,6 +95,9 @@ az storage blob service-properties update --account-name $ST_NAME --static-websi
 cd ..
 #Movendo arquivos do build para o storage account
 az storage blob upload-batch --account-name $ST_NAME -s ./build -d '$web' --overwrite
-
-echo "[+] FRONTEND: $WEB_APP
-
+cd ../../
+WEB_BACK=`grep azurewebsites.net infrastructure/terraform.tfstate| cut -d ":" -f2 | tr -d '" \n\r,'`
+echo "____________________________"
+echo "[+] FRONTEND: $WEB_APP"
+echo "[+] BACK END: http://$WEB_BACK"
+echo "____________________________"
