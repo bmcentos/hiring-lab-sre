@@ -70,7 +70,7 @@ az webapp config appsettings set --resource-group "$RG" --name $APP_NAME --setti
 #cat .env
 #Criando variavel de strinf de conexão
 az webapp config appsettings set  --name $APP_NAME --settings DATABASE_URI=$APP_STRING --resource-group $RG
-az webapp config set --name $APP_NAME --resource-group $RG 
+az webapp config set --name $APP_NAME --resource-group $RG  --startup-file "flask run --port 8000 --host 0.0.0.0"
 
 #Libera regra para serviços do Azure
 az postgres flexible-server firewall-rule create --resource-group $RG \
