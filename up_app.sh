@@ -77,7 +77,7 @@ az postgres flexible-server firewall-rule create --resource-group $RG \
                                         --name $DB_NAME \
 					--rule-name AllowAllWindowsAzureIps \
                                         --start-ip-address 0.0.0.0 \
-                                        --end-ip-address 255.255.255.255 
+                                        --end-ip-address 0.0.0.0
 
 #Publicando a aplicação
 echo "Subindo aplicação em WEBAPPS"
