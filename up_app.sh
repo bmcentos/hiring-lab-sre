@@ -86,7 +86,7 @@ az webapp up --resource-group $RG --name $APP_NAME
 
 #Cria aplicação estatica e adiciona em storage account
 cd ../../front-end/customer-app
-echo 'REACT_APP_API_URI="'$WEB_APP'"' > .env
+echo 'REACT_APP_API_URI="'$WEB_BACK'"' > .env
 #Build da aplicação
 npm run build
 cd public
