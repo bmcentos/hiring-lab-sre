@@ -33,13 +33,13 @@ if [ $RES -eq 0 ] ; then
 fi	
 
 #Coletando variaveis para criação dos recursos (Melhorar posteriormente com "jq")
-WEB_APP=`grep primary_web_endpoint infrastructure/terraform.tfstate |  cut -d ":" -f2,3| tr -d ',"\n\r'`
-RG=`grep rg_name infrastructure/variables.auto.tfvars | cut -d "=" -f2| tr -d ' "\n\r'`
-APP_NAME=`grep default_hostname infrastructure/terraform.tfstate | cut -d ":" -f2,3| tr -d ',"\r\n'| cut -d "." -f1| tr -d '\n\r'`
+WEB_APP=`grep primary_web_endpoint infrastructure/terraform.tfstate |  cut -d ":" -f2,3| tr -d ',"\n\r '`
+RG=`grep rg_name infrastructure/variables.auto.tfvars | cut -d "=" -f2| tr -d ' "\n\r '`
+APP_NAME=`grep default_hostname infrastructure/terraform.tfstate | cut -d ":" -f2,3| tr -d ',"\r\n'| cut -d "." -f1| tr -d '\n\r '`
 DB_HOST=$(host `grep database.azure.com infrastructure/terraform.tfstate | cut -d ":" -f2| tr -d ' ",'`| cut -d " " -f4| head -1)
-DB_USER=`grep db_username infrastructure/variables.auto.tfvars | cut -d "=" -f2| tr -d '" \n\r'`
-DB_PASS=`grep db_password infrastructure/variables.auto.tfvars | cut -d "=" -f2| tr -d '" \n\r'`
-DB_NAME=`az postgres flexible-server  list | jq .[].name| head -1| tr -d '\n\r"'`
+DB_USER=`grep db_username infrastructure/variables.auto.tfvars | cut -d "=" -f2| tr -d '" \n\ r'`
+DB_PASS=`grep db_password infrastructure/variables.auto.tfvars | cut -d "=" -f2| tr -d '" \n\r '`
+DB_NAME=`az postgres flexible-server  list | jq .[].name| head -1| tr -d '\n\r" '`
 #Monta string da API
 echo 'DATABASE_URI="postgresql://'$DB_USER':'$DB_PASS'@'$DB_HOST'/postgres?sslmode=require"' > back-end/web-api/.env
 APP_STRING=`cat back-end/web-api/.env | cut -d "=" -f2| tr -d '\n\r"'`
